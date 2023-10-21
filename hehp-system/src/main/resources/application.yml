@@ -1,0 +1,17 @@
+server:
+  port: 8000
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/helperdb?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: baicaiin33
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+  mapper-locations:
+    - classpath:mappers/*
+  #实体类别名配置
+  type-aliases-package: com.AkiTeam.mapper
+  #日志配置
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

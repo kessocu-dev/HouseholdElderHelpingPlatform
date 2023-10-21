@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.AkiTeam.mapper.user_elder_infoMapper">
+    <resultMap id="infoMap" type="com.AkiTeam.entity.user_elder_info">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="idcard" property="idcard"/>
+        <result column="family_phone" property="family_phone"/>
+        <result column="location" property="location"/>
+        <result column="date" property="date"/>
+    </resultMap>
+
+    <select id="GetAllElderInfo" resultMap="infoMap">
+        SELECT *
+        FROM user_elder_info
+    </select>
+
+</mapper>
