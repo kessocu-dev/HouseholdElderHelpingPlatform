@@ -2,16 +2,18 @@ package com.AkiTeam.common;
 
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * @author Yunnuo
- * @email ymz@ebox.vip
- * @date 2023/2/26 15:25
+ * @email 842384412@qq.com
+ * @date 2023/10/22 15:25
  * @desciption: 全局统一返回结果状态码
  */
 @Getter
 public enum ResultCode {
 
-    OK("200", "成功"),
+    SUCCESS("200", "成功"),
     ERROR("201", "失败"),
     PARAM_ERROR("202", "参数不正确"),
     SERVICE_ERROR("203", "服务异常"),
@@ -42,7 +44,7 @@ public enum ResultCode {
 
     public static ResultCode resolve(String statusCode){
         for (ResultCode resultCode : values()){
-            if (resultCode.code == statusCode){
+            if (Objects.equals(resultCode.code, statusCode)){
                 return resultCode;
             }
         }

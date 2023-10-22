@@ -1,11 +1,13 @@
 package com.AkiTeam.common;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author  aki
@@ -13,100 +15,190 @@ import java.util.Objects;
  * @date  2023/10/20 19:17
  * @desciption:  RestfulAPI全局统一返回结果类
  */
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 @AllArgsConstructor
-public class R<T> implements Serializable{
-
+public class R<T> implements Serializable {
     private static final long serialVersionUID = 1L;
-    /**
-     * 返回码
-     */
-    private ResultCode code;
-    /**
-     * 返回消息
-     */
-    private String message;
-    /**
-     * 数据数
-     */
-    private long total;
-    /**
-     * 返回数据
-     */
+
+    private int code;
+    private boolean success;
     private T data;
+    private String msg;
 
-    public R(){this.total = 0L;}
 
-    public R(ResultCode code){this.code = code;}
+    private R(ResultCode resultCode) {
+        this(resultCode, null, resultCode.getMessage());
+    }
 
-    public R(ResultCode code, T data){
-        super();
+    private R(ResultCode resultCode, String msg) {
+        this(resultCode, null, msg);
+    }
+
+    private R(ResultCode resultCode, T data) {
+        this(resultCode, data, resultCode.getMessage());
+    }
+
+    private R(ResultCode resultCode, T data, String msg) {
+        this(Integer.parseInt(resultCode.getCode()), data, msg);
+    }
+
+    private R(int code, T data, String msg) {
         this.code = code;
         this.data = data;
-        this.message = code.getMessage();
+        this.msg = msg;
+        this.success = Objects.equals(ResultCode.SUCCESS.getCode(), String.valueOf(code));
     }
 
-    public String getCode(){
-        return this.code.getCode();
+    /**
+     * 判断返回是否为成功
+     *
+     * @param result Result
+     * @return 是否成功
+     */
+    public static boolean isSuccess(@Nullable R<?> result) {
+        return Optional.ofNullable(result)
+                .map(x -> ObjectUtils.nullSafeEquals(ResultCode.SUCCESS.getCode(), x.code))
+                .orElse(Boolean.FALSE);
     }
 
-    public String getCodeMessage(){
-        return this.code.getMessage();
-    }
-    public static  <T> R<T> ok(){
-        return new R<T>(ResultCode.OK);
-    }
-
-    public static <T> R ok(T data){
-        return R.builder()
-                .code(ResultCode.OK)
-                .data(data)
-                .message(ResultCode.OK.getMessage())
-                .build();
+    /**
+     * 判断返回是否为成功
+     *
+     * @param result Result
+     * @return 是否成功
+     */
+    public static boolean isNotSuccess(@Nullable R<?> result) {
+        return !R.isSuccess(result);
     }
 
-    public static <T> R ok(T data, long total) {
-        return R.builder()
-                .code(ResultCode.OK)
-                .data(data)
-                .total(total)
-                .message(ResultCode.OK.getMessage())
-                .build();
+    /**
+     * 返回R
+     *
+     * @param data 数据
+     * @param <T>  T 泛型标记
+     * @return R
+     */
+    public static <T> R<T> data(T data) {
+        return data(data, AkiConstant.DEFAULT_SUCCESS_MESSAGE.getMsg());
     }
 
-    public static <T> R ok(String message){
-        return R.builder()
-                .code(ResultCode.OK)
-                .message(message)
-                .build();
+    /**
+     * 返回R
+     *
+     * @param data 数据
+     * @param msg  消息
+     * @param <T>  T 泛型标记
+     * @return R
+     */
+    public static <T> R<T> data(T data, String msg) {
+        return data(HttpServletResponse.SC_OK, data, msg);
     }
 
-    public static <T> R ok(String message, T data){
-        return R.builder()
-                .code(ResultCode.OK)
-                .message(message)
-                .data(data)
-                .build();
+    /**
+     * 返回R
+     *
+     * @param code 状态码
+     * @param data 数据
+     * @param msg  消息
+     * @param <T>  T 泛型标记
+     * @return R
+     */
+    public static <T> R<T> data(int code, T data, String msg) {
+        return new R<>(code, data, data == null ? AkiConstant.DEFAULT_NULL_MESSAGE.getMsg() : msg);
     }
 
-    public static <T> R error(){
-        return R.builder()
-                .code(ResultCode.ERROR)
-                .message(ResultCode.ERROR.getMessage())
-                .data(null)
-                .build();
+    /**
+     * 返回R
+     *
+     * @param msg 消息
+     * @param <T> T 泛型标记
+     * @return R
+     */
+    public static <T> R<T> success(String msg) {
+        return new R<>(ResultCode.SUCCESS, msg);
     }
 
-    public static <T> R error(String message){
-        return R.builder()
-                .code(ResultCode.ERROR)
-                .message(message == null || message.isEmpty() ? ResultCode.ERROR.getMessage() : message)
-                .data(null)
-                .build();
+    /**
+     * 返回R
+     *
+     * @param resultCode 业务代码
+     * @param <T>        T 泛型标记
+     * @return R
+     */
+    public static <T> R<T> success(ResultCode resultCode) {
+        return new R<>(resultCode);
     }
 
-    public boolean isSuccess(){
-        return Objects.equals(this.getCode(), ResultCode.OK.name());
+    /**
+     * 返回R
+     *
+     * @param resultCode 业务代码
+     * @param msg        消息
+     * @param <T>        T 泛型标记
+     * @return R
+     */
+    public static <T> R<T> success(ResultCode resultCode, String msg) {
+        return new R<>(resultCode, msg);
     }
+
+    /**
+     * 返回R
+     *
+     * @param msg 消息
+     * @param <T> T 泛型标记
+     * @return R
+     */
+    public static <T> R<T> fail(String msg) {
+        return new R<>(ResultCode.ERROR, msg);
+    }
+
+
+    /**
+     * 返回R
+     *
+     * @param code 状态码
+     * @param msg  消息
+     * @param <T>  T 泛型标记
+     * @return R
+     */
+    public static <T> R<T> fail(int code, String msg) {
+        return new R<>(code, null, msg);
+    }
+
+    /**
+     * 返回R
+     *
+     * @param resultCode 业务代码
+     * @param <T>        T 泛型标记
+     * @return R
+     */
+    public static <T> R<T> fail(ResultCode resultCode) {
+        return new R<>(resultCode);
+    }
+
+    /**
+     * 返回R
+     *
+     * @param resultCode 业务代码
+     * @param msg        消息
+     * @param <T>        T 泛型标记
+     * @return R
+     */
+    public static <T> R<T> fail(ResultCode resultCode, String msg) {
+        return new R<>(resultCode, msg);
+    }
+
+    /**
+     * 返回R
+     *
+     * @param flag 成功状态
+     * @return R
+     */
+    public static <T> R<T> status(boolean flag) {
+        return flag ? success(AkiConstant.DEFAULT_SUCCESS_MESSAGE.getMsg()) : fail(AkiConstant.DEFAULT_FAILURE_MESSAGE.getMsg());
+    }
+
 }

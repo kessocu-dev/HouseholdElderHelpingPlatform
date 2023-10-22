@@ -1,5 +1,6 @@
 package com.AkiTeam.controller;
 
+import com.AkiTeam.common.R;
 import com.AkiTeam.entity.user_elder_info;
 import com.AkiTeam.service.impl.ElderInfoServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +21,7 @@ public class ElderInfoController {
 
     @PostMapping("/returnAllInfo")
     @Operation(summary = "返回所有老人信息")
-    public List<user_elder_info> returnAllInfo(){
-        return elderInfoService.GetAllElderInfo();
+    public R<List<user_elder_info>> returnAllInfo(){
+        return R.data(elderInfoService.GetAllElderInfo());
     }
 }
