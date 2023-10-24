@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.AkiTeam.mapper.user_elder_illnessMapper">
+    <update id="InsertIllnessByInfo">
+        <foreach collection="info" item="item" separator=";">
+            UPDATE user_elder_illness
+            SET "illness" = jsonb_set("illness"::jsonb,'{${item.illness}}' , '"${item.stage}"')
+            <where>
+                1=1
+                <if test="item.name != null">
+                    AND name = #{item.name}
+                </if>
+            </where>
+        </foreach>
+    </update>
+</mapper>
