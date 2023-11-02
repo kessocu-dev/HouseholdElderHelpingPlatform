@@ -7,5 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface user_elder_infoMapper {
+
     List<user_elder_info> GetAllElderInfo();
+
 }

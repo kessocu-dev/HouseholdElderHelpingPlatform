@@ -10,8 +10,10 @@ import java.util.List;
 
 @Service
 public class ElderInfoServiceImpl implements ElderInfoService {
+
     @Autowired
     private user_elder_infoMapper userElderInfoMapper;
+
     @Override
     public List<user_elder_info> GetAllElderInfo() {
         return userElderInfoMapper.GetAllElderInfo();
